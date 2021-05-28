@@ -50,7 +50,7 @@ def randseq(length, gc):
 	return seq
 
 	
-
+#orf lengths in seq
 def findorfs(seq):
 	lengths = []
 	for i in range(len(seq) - 2):
@@ -66,4 +66,60 @@ def findorfs(seq):
 		if stop != None: lengths.append((stop - start)/3)
 	return lengths
 
-	
+#orfs
+def orfseqs(seq):
+	orfseqs = []
+	for i in range(len(seq) - 2):
+		start = None
+		stop = None
+		if seq[i: i + 3] == 'ATG':
+			start = i
+			for j in range(i, len(seq) - 2, 3):
+				codon = seq[j: j + 3]
+				if codon == 'TAA' or codon == 'TGA' or codon == 'TAG':
+					stop = j
+					break
+		if stop != None: orfseqs.append(seq[start: stop])
+	return orfseqs
+
+#translate dna seqs into protein
+gcode = {
+	'AAA' : 'K',	'AAC' : 'N',	'AAG' : 'K',	'AAT' : 'N',
+	'ACA' : 'T',	'ACC' : 'T',	'ACG' : 'T',	'ACT' : 'T',
+	'AGA' : 'R',	'AGC' : 'S',	'AGG' : 'R',	'AGT' : 'S',
+	'ATA' : 'I',	'ATC' : 'I',	'ATG' : 'M',	'ATT' : 'I',
+	'CAA' : 'Q',	'CAC' : 'H',	'CAG' : 'Q',	'CAT' : 'H',
+	'CCA' : 'P',	'CCC' : 'P',	'CCG' : 'P',	'CCT' : 'P',
+	'CGA' : 'R',	'CGC' : 'R',	'CGG' : 'R',	'CGT' : 'R',
+	'CTA' : 'L',	'CTC' : 'L',	'CTG' : 'L',	'CTT' : 'L',
+	'GAA' : 'E',	'GAC' : 'D',	'GAG' : 'E',	'GAT' : 'D',
+	'GCA' : 'A',	'GCC' : 'A',	'GCG' : 'A',	'GCT' : 'A',
+	'GGA' : 'G',	'GGC' : 'G',	'GGG' : 'G',	'GGT' : 'G',
+	'GTA' : 'V',	'GTC' : 'V',	'GTG' : 'V',	'GTT' : 'V',
+	'TAA' : '*',	'TAC' : 'Y',	'TAG' : '*',	'TAT' : 'Y',
+	'TCA' : 'S',	'TCC' : 'S',	'TCG' : 'S',	'TCT' : 'S',
+	'TGA' : '*',	'TGC' : 'C',	'TGG' : 'W',	'TGT' : 'C',
+	'TTA' : 'L',	'TTC' : 'F',	'TTG' : 'L',	'TTT' : 'F',
+}
+
+def translate(seq):
+	seq = seq.upper() #makes sure all letters are upper so that both upper and lowercase letters are translated
+	protein = ''
+	for i in range(0, len(seq) -2, 3):
+		codon = seq[i: i + 3]
+		if codon in gcode: 
+			protein += gcode[codon]
+		else: 
+			protein += 'X'  #any codon not in dictionary will become X
+	return protein
+
+#return reverse complement of DNA seq
+def anti(dna):
+	seq = ''
+	for c in dna[::-1]:
+		if   c == 'A': seq += 'T'
+		elif c == 'C': seq += 'G'
+		elif c == 'G': seq += 'C'
+		elif c == 'T': seq += 'A'
+		else: seq += 'N'
+	return seq
